@@ -56,3 +56,20 @@ export const updateContact = async (req, res, next) => {
         next(error);
     }
 };
+
+export const updateStatusContact = async (req, res, next) => {
+    console.log("updateStatusContact");
+    try {
+        const { contactId } = req.params;
+        const contact = await contactsService.updateStatusContact(
+            contactId,
+            req.body
+        );
+        if (!contact) {
+            throw HttpError(404, `Contact with id=${contactId} not found`);
+        }
+        res.json(contact);
+    } catch (error) {
+        next(error);
+    }
+};
