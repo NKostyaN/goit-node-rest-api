@@ -2,10 +2,11 @@ import * as authServices from "../services/authServices.js";
 
 const registerController = async (req, res, next) => {
     try {
-        const { email, subscription } = await authServices.registerUser(
-            req.body
-        );
-        return res.status(201).json({ user: { email, subscription } });
+        const { email, subscription, avatarURL } =
+            await authServices.registerUser(req.body);
+        return res
+            .status(201)
+            .json({ user: { email, subscription, avatarURL } });
     } catch (error) {
         next(error);
     }
@@ -38,9 +39,19 @@ const logoutController = async (req, res, next) => {
     }
 };
 
+const updateAvatarController = async (req, res, next) => {
+    try {
+        const resault = await authServices.updateAvatar(req.user.id, req.file);
+        return res.status(200).json(resault);
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     registerController,
     loginController,
     getCurrentController,
     logoutController,
+    updateAvatarController,
 };

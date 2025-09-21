@@ -2,13 +2,26 @@ import User from "../db/User.js";
 import bcrypt from "bcrypt";
 import HttpError from "../helpers/HttpError.js";
 import { createToken } from "../helpers/jwt.js";
+import gravatar from "gravatar";
+import path from "node:path";
+import fs from "node:fs/promises";
+
+const avatarsDir = path.resolve("public", "avatars");
 
 export const findUser = (query) => User.findOne({ where: query });
 
 export const registerUser = async (payload) => {
     const hashedPassword = await bcrypt.hash(payload.password, 10);
-    return User.create({ ...payload, password: hashedPassword });
-    // return User.create(payload);
+    const avatarURL = gravatar.url(payload.email, {
+        s: "128",
+        d: "initials",
+        protocol: "https",
+    });
+    return User.create({
+        ...payload,
+        password: hashedPassword,
+        avatarURL: avatarURL,
+    });
 };
 
 export const loginUser = async (payload) => {
@@ -43,4 +56,26 @@ export const logoutUser = async (id) => {
     }
 
     await user.update({ token: null });
+};
+
+export const updateAvatar = async (id, file) => {
+    const user = await User.findByPk(id);
+
+    if (!user) {
+        throw HttpError(401, "Not authorized");
+    }
+
+    if (!file) throw HttpError(400, "Avatar file is required");
+
+    let avatarURL = null;
+    if (file) {
+        const newPath = path.join(avatarsDir, file.filename);
+        await fs.rename(file.path, newPath);
+        avatarURL = path.join("avatars", file.filename);
+    }
+
+    await user.update({ avatarURL: avatarURL });
+    return {
+        avatarURL: user.avatarURL,
+    };
 };
