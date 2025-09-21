@@ -1,27 +1,27 @@
-import Contact from "../db/contacts.js";
+import Contact from "../db/Contact.js";
 
-export const listContacts = () => Contact.findAll();
+export const listContacts = (query) => Contact.findAll({ where: query });
 
-export const getContactById = (contactId) => Contact.findByPk(contactId);
+export const getContact = (query) => Contact.findOne({ where: query });
 
 export const addContact = (payload) => Contact.create(payload);
 
-export const removeContact = async (contactId) => {
-    const contact = await getContactById(contactId);
+export const removeContact = async (query) => {
+    const contact = await getContact(query);
     if (!contact) return null;
     await contact.destroy();
     return contact;
 };
 
-export const updateContactById = async (contactId, payload) => {
-    const contact = await getContactById(contactId);
+export const updateContact = async (query, payload) => {
+    const contact = await getContact(query);
     if (!contact) return null;
     await contact.update(payload);
     return contact;
 };
 
-export const updateStatusContact = async (contactId, { favorite }) => {
-    const contact = await getContactById(contactId);
+export const updateStatusContact = async (query, { favorite }) => {
+    const contact = await getContact(query);
     if (!contact) return null;
     await contact.update({ favorite });
     return contact;
