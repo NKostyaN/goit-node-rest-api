@@ -2,7 +2,7 @@ import express from "express";
 import authControllers from "../controllers/authControllers.js";
 import validateBody from "../helpers/validateBody.js";
 import authenticate from "../middlewares/authenticate.js";
-import { registerSchema, loginSchema } from "../schemas/authSchemas.js";
+import { registerSchema, loginSchema, verifySchema } from "../schemas/authSchemas.js";
 import upload from "../middlewares/upload.js";
 
 const authRouter = express.Router();
@@ -12,6 +12,14 @@ authRouter.post(
     validateBody(registerSchema),
     authControllers.registerController
 );
+
+authRouter.post(
+    "/verify",
+    validateBody(verifySchema),
+    authControllers.resendVerifyController
+);
+
+authRouter.get("/verify/:verificationToken", authControllers.verifyController);
 
 authRouter.post(
     "/login",

@@ -14,3 +14,7 @@ export const loginSchema = Joi.object({
     email: Joi.string().trim().pattern(emailRegexp).required(),
     password: Joi.string().trim().min(6).required(),
 });
+
+export const verifySchema = Joi.object({
+    email: Joi.string().trim().pattern(emailRegexp).required(),
+});
